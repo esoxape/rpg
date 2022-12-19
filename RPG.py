@@ -1,5 +1,6 @@
 import curses
 import time
+import random
 class monster:
     def __init__(self, name):
         self.name=name
@@ -18,6 +19,7 @@ class item:
             self.speed=2
             self.range=120
             self.damage="1d6"
+            self.pattern="|"
         if name=="Rusty Throwing Dagger":
             self.gfxN="*"     
             self.gfxE="*" 
@@ -26,6 +28,7 @@ class item:
             self.speed=3
             self.range=5
             self.damage="1d4"
+            self.pattern="W"
         if name=="Iceball Spell":
             self.gfxN="\U00002744"     
             self.gfxE="\U00002744"    
@@ -34,6 +37,7 @@ class item:
             self.speed=8
             self.range=30
             self.damage="1d10"
+            self.pattern="|"
         if name=="Rusty Two Handed Sword":
             self.damage="1d8"
             self.attacks=1
@@ -84,26 +88,54 @@ class projectile:
         if self.tickTotal==p1.rangedWeapon.range:
             map[self.x][self.y]=self.storeMapGfx
             return True
+        
+        if self.tickTotal==0 and self.tick==1 and p1.rangedWeapon.pattern =="W":
+            if self.direction=="N":
+                Bullets.append(projectile(self.x,self.y,p1.rangedWeapon,"NW",0))
+                Bullets.append(projectile(self.x,self.y,p1.rangedWeapon,"NE",0))
+            if self.direction=="E":
+                Bullets.append(projectile(self.x,self.y,p1.rangedWeapon,"ENE",0))
+                Bullets.append(projectile(self.x,self.y,p1.rangedWeapon,"ESE",0))
 
-        if self.direction == "N":    
+        if self.direction == "N" or self.direction=="NW" or self.direction=="NE":    
             if p1.rangedWeapon.speed == self.tick: 
-                self.tickTotal+=1
-                map[self.x][self.y]=self.storeMapGfx  
+                self.tickTotal+=1                
+                if self.tickTotal>1:map[self.x][self.y]=self.storeMapGfx                
                 self.tick = 0
-                if(map[self.x-1][self.y]=="." or map[self.x][self.y]==" "):
+                if(map[self.x-1][self.y]=="." and self.direction=="N" or map[self.x-1][self.y]==" " and self.direction=="N"):
                     self.x = self.x - 1
                     self.storeMapGfx=map[self.x][self.y]
                     map[self.x][self.y] = p1.rangedWeapon.gfxN
+                elif map[self.x-1][self.y-1]=="." and self.direction=="NW" or map[self.x-1][self.y-1]==" " and self.direction=="NW":
+                    self.x = self.x - 1
+                    self.y-=1
+                    self.storeMapGfx=map[self.x][self.y]
+                    map[self.x][self.y] = p1.rangedWeapon.gfxN
+                elif map[self.x-1][self.y+1]=="." and self.direction=="NE" or map[self.x-1][self.y+1]==" " and self.direction=="NE":
+                    self.x = self.x - 1
+                    self.y+=1
+                    self.storeMapGfx=map[self.x][self.y]
+                    map[self.x][self.y] = p1.rangedWeapon.gfxN
                 
-        if self.direction == "E":
+        if self.direction == "E" or self.direction == "ENE" or self.direction == "ESE":
             if p1.rangedWeapon.speed == self.tick:
                 self.tickTotal+=1 
-                map[self.x][self.y]=self.storeMapGfx   
+                if self.tickTotal>1:map[self.x][self.y]=self.storeMapGfx   
                 self.tick = 0
-            if(map[self.x][self.y+1]=="." or map[self.x][self.y]==" "):
-                self.y = self.y + 1
-                self.storeMapGfx=map[self.x][self.y]
-                map[self.x][self.y] = p1.rangedWeapon.gfxE
+                if(map[self.x][self.y+1]==". " and self.direction == "E" or map[self.x][self.y+1]=="  " and self.direction == "E"):
+                    self.y = self.y + 1
+                    self.storeMapGfx=map[self.x][self.y]
+                    map[self.x][self.y] = p1.rangedWeapon.gfxE
+                elif(map[self.x-1][self.y+1]==". " and self.direction == "ENE" or map[self.x-1][self.y+1]=="  " and self.direction == "ENE"):
+                    self.y = self.y + 1
+                    self.x-=1
+                    self.storeMapGfx=map[self.x][self.y]
+                    map[self.x][self.y] = p1.rangedWeapon.gfxE
+                elif(map[self.x+1][self.y+1]==". " and self.direction == "ESE" or map[self.x+1][self.y+1]=="  " and self.direction == "ESE"):
+                    self.y = self.y + 1
+                    self.x+=1
+                    self.storeMapGfx=map[self.x][self.y]
+                    map[self.x][self.y] = p1.rangedWeapon.gfxE
                 
         if self.direction == "S":     
             if p1.rangedWeapon.speed == self.tick:
@@ -148,6 +180,8 @@ for i in range(len(map)):
         elif j<60 and j%2==1: map[i][j]=""
         elif j>1140 and j%2==0:map[i][j]="\U0001F332"
         elif j>1140 and j%2==1: map[i][j]=""
+        elif j%10==0:map[i][j]=". "
+        else: map[i][j]="  "
 
 # Create a grid of characters to represent the screen
 grid = [[" " for x in range(119)] for y in range(42)]
@@ -244,7 +278,7 @@ while True:
     if CanFire==True and key ==ord(' '):
         CanFire=False        
         if Direction=="N":Bullets.append(projectile(x+20,y+60,p1.rangedWeapon,Direction,0))   
-        if Direction=="E":Bullets.append(projectile(x+20,y+61,p1.rangedWeapon,Direction,0)) 
+        if Direction=="E":Bullets.append(projectile(x+20,y+60,p1.rangedWeapon,Direction,0)) 
         if Direction=="S":Bullets.append(projectile(x+20,y+60,p1.rangedWeapon,Direction,0)) 
         if Direction=="W":Bullets.append(projectile(x+20,y+60,p1.rangedWeapon,Direction,0)) 
     time.sleep(0.005)
