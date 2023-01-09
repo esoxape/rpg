@@ -66,9 +66,9 @@ class StoreKnight(object):
 
         main_menu_items = [
             ("Chain Mail - 1000 gp", lambda:CanBuy(self.screen,1000,"Chain Mail")),
-            ("Full Plate - 100000 gp", lambda:CanBuy(self.screen,100000,"Full Plate")),
+            ("Full Plate - 10000 gp", lambda:CanBuy(self.screen,10000,"Full Plate")),
             ("Steel Two Handed Sword - 1000 gp", lambda:CanBuy(self.screen,1000,"Steel Two Handed Sword")),
-            ("Magic Two Handed Sword - 100000 gp", lambda:CanBuy(self.screen,100000,"Magic Two Handed Sword")),
+            ("Magic Two Handed Sword - 10000 gp", lambda:CanBuy(self.screen,10000,"Magic Two Handed Sword")),
             ("Steel Throwing Dagger - 1000 gp", lambda:CanBuy(self.screen,1000,"Steel Throwing Dagger")),          
         ]
         main_menu = Menu(main_menu_items, self.screen, 0)
@@ -81,8 +81,9 @@ class StoreHunter(object):
 
         main_menu_items = [
             ("Chain Mail - 1000 gp", lambda:CanBuy(self.screen,1000,"Chain Mail")),
-            ("Full Plate - 100000 gp", lambda:CanBuy(self.screen,100000,"Full Plate")),
+            ("Full Plate - 10000 gp", lambda:CanBuy(self.screen,10000,"Full Plate")),
             ("Elf Bow - 1000 gp", lambda:CanBuy(self.screen,1000,"Elf Bow")),
+            ("Long Bow - 10000 gp", lambda:CanBuy(self.screen,10000,"Elf Bow")),
             ("Steel Daggers - 1000 gp", lambda:CanBuy(self.screen,1000,"Steel Daggers")),          
         ]
         main_menu = Menu(main_menu_items, self.screen,0)
@@ -95,11 +96,11 @@ class StoreMage(object):
 
         main_menu_items = [
             ("Apprentice Robe - 1000 gp", lambda:CanBuy(self.screen,1000,"Apprentice Robe")),
-            ("Master Robe - 100000 gp", lambda:CanBuy(self.screen,100000,"Master Robe")),
+            ("Master Robe - 10000 gp", lambda:CanBuy(self.screen,10000,"Master Robe")),
             ("Ice Twister Spell - 1000 gp", lambda:CanBuy(self.screen,1000,"Ice Twister Spell")),
-            ("Yew Quarterstaff - 100000 gp", lambda:CanBuy(self.screen,100000,"Yew Quarterstaff")),
+            ("Yew Quarterstaff - 10000 gp", lambda:CanBuy(self.screen,10000,"Yew Quarterstaff")),
             ("Quarterstaff - 1000 gp", lambda:CanBuy(self.screen,1000,"Quarterstaff")),
-            ("Meteor Spell - 100000 gp", lambda:CanBuy(self.screen,100000,"Meteor Spell")),          
+            ("Meteor Spell - 10000 gp", lambda:CanBuy(self.screen,10000,"Meteor Spell")),          
         ]
         main_menu = Menu(main_menu_items, self.screen,0)
         main_menu.display()    
@@ -227,7 +228,7 @@ class monster:
             self.meleeGFX=monster.CreateGFX(self)
             self.rangedWeapon=item("Dragon Breath")
         if(self.name=="Bat"):
-            self.gold=random.randint(10,50)
+            self.gold=random.randint(100,500)
             self.xp=500
             self.hp=20
             self.maxhp=20
@@ -246,7 +247,7 @@ class monster:
             self.meleeGFX=monster.CreateGFX(self)
             self.rangedWeapon=item("None")
         if(self.name=="Elf"):
-            self.gold=random.randint(250,500)
+            self.gold=random.randint(250,1000)
             self.xp=2500
             self.hp=50
             self.maxhp=50
@@ -357,6 +358,16 @@ class item:
             self.range=8
             self.damage="1d12"
             self.pattern="V"
+            self.type="Ranged Weapon"
+        if name=="Long Bow":
+            self.gfxN="\U00002191 "     
+            self.gfxE="\U00002192 " 
+            self.gfxS="\U00002193 "
+            self.gfxW="\U00002190 "
+            self.speed=3
+            self.range=80
+            self.damage="1d20"
+            self.pattern="|||"
             self.type="Ranged Weapon"
         if name=="Elf Bow":
             self.gfxN="\U00002191 "     
@@ -514,7 +525,7 @@ class player:
     def __init__(self,name,klass):
         self.name=name
         self.klass=klass
-        self.gold=11111110
+        self.gold=0
         self.inventory=[]
         self.level=1
         self.xp=0
