@@ -65,8 +65,8 @@ class StoreKnight(object):
         curses.curs_set(0)
 
         main_menu_items = [
-            ("Chain Mail - 1000 gp", lambda:CanBuy(self.screen,1000,"Chain Mail")),
-            ("Full Plate - 10000 gp", lambda:CanBuy(self.screen,10000,"Full Plate")),
+            ("Chain Mail (5 damage absorbtion)- 1000 gp", lambda:CanBuy(self.screen,1000,"Chain Mail")),
+            ("Full Plate (8 damage absorbtion) - 10000 gp", lambda:CanBuy(self.screen,10000,"Full Plate")),
             ("Steel Two Handed Sword - 1000 gp", lambda:CanBuy(self.screen,1000,"Steel Two Handed Sword")),
             ("Magic Two Handed Sword - 10000 gp", lambda:CanBuy(self.screen,10000,"Magic Two Handed Sword")),
             ("Steel Throwing Dagger - 1000 gp", lambda:CanBuy(self.screen,1000,"Steel Throwing Dagger")),          
@@ -80,10 +80,10 @@ class StoreHunter(object):
         curses.curs_set(0)
 
         main_menu_items = [
-            ("Chain Mail - 1000 gp", lambda:CanBuy(self.screen,1000,"Chain Mail")),
-            ("Full Plate - 10000 gp", lambda:CanBuy(self.screen,10000,"Full Plate")),
-            ("Elf Bow - 1000 gp", lambda:CanBuy(self.screen,1000,"Elf Bow")),
-            ("Long Bow - 10000 gp", lambda:CanBuy(self.screen,10000,"Elf Bow")),
+            ("Chain Mail (5 damage absorbtion)- 1000 gp", lambda:CanBuy(self.screen,1000,"Chain Mail")),
+            ("Full Plate (8 damage absorbtion)- 10000 gp", lambda:CanBuy(self.screen,10000,"Full Plate")),
+            ("Composite Bow- 1000 gp", lambda:CanBuy(self.screen,1000,"Composite Bow")),
+            ("Long Bow - 10000 gp", lambda:CanBuy(self.screen,10000,"Long Bow")),
             ("Steel Daggers - 1000 gp", lambda:CanBuy(self.screen,1000,"Steel Daggers")),
             ("Magic Daggers - 10000 gp", lambda:CanBuy(self.screen,10000,"Magic Daggers")),           
         ]
@@ -96,8 +96,8 @@ class StoreMage(object):
         curses.curs_set(0)
 
         main_menu_items = [
-            ("Apprentice Robe - 1000 gp", lambda:CanBuy(self.screen,1000,"Apprentice Robe")),
-            ("Master Robe - 10000 gp", lambda:CanBuy(self.screen,10000,"Master Robe")),
+            ("Apprentice Robe (3 damage absorbtion) - 1000 gp", lambda:CanBuy(self.screen,1000,"Apprentice Robe")),
+            ("Master Robe (5 damage absorbtion)- 10000 gp", lambda:CanBuy(self.screen,10000,"Master Robe")),
             ("Ice Twister Spell - 1000 gp", lambda:CanBuy(self.screen,1000,"Ice Twister Spell")),
             ("Yew Quarterstaff - 10000 gp", lambda:CanBuy(self.screen,10000,"Yew Quarterstaff")),
             ("Quarterstaff - 1000 gp", lambda:CanBuy(self.screen,1000,"Quarterstaff")),
@@ -398,7 +398,17 @@ class item:
             self.speed=2
             self.range=80
             self.damage="1d8"
-            self.pattern="|"
+            self.pattern="|||"
+            self.type="Ranged Weapon"
+        if name=="Composite Bow":
+            self.gfxN="\U00002191 "     
+            self.gfxE="\U00002192 " 
+            self.gfxS="\U00002193 "
+            self.gfxW="\U00002190 "
+            self.speed=2
+            self.range=80
+            self.damage="1d12"
+            self.pattern="|||"
             self.type="Ranged Weapon"
         if name=="Rusty Throwing Dagger":
             self.gfxN="* "     
@@ -437,7 +447,7 @@ class item:
             self.gfxW="OO"   
             self.speed=4
             self.range=3000
-            self.damage="2d10"
+            self.damage="2d12"
             self.pattern="O"
             self.type="Ranged Weapon"
         if name=="Ice Twister Spell":
@@ -1166,6 +1176,7 @@ lower=""
 while(p1=="zxzxae"):      
     print("Welcome to this awesome RPG, please make sure to maximise your window to not cause crashes 1440p or higher resolution is required")
     print("Use arrow keys to navigate, space to shoot and enter to buy and equip stuff. Melee combat is automatic so just relax while in melee")
+    print("Walk onto $$ squares to enter the shop")
     print("Please select your class:")
     print("1 for Knight(strong melee, weak ranged):")
     print("2 for Hunter (Balanced melee and ranged)")      
