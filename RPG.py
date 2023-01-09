@@ -447,7 +447,7 @@ class item:
             self.gfxW="OO"   
             self.speed=4
             self.range=3000
-            self.damage="2d12"
+            self.damage="2d20"
             self.pattern="O"
             self.type="Ranged Weapon"
         if name=="Ice Twister Spell":
