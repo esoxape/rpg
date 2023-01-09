@@ -1165,6 +1165,7 @@ upper=""
 lower=""
 while(p1=="zxzxae"):      
     print("Welcome to this awesome RPG, please make sure to maximise your window to not cause crashes 1440p or higher resolution is required")
+    print("Use arrow keys to navigate, space to shoot and enter to buy and equip stuff. Melee combat is automatic so just relax while in melee")
     print("Please select your class:")
     print("1 for Knight(strong melee, weak ranged):")
     print("2 for Hunter (Balanced melee and ranged)")      
