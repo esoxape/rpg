@@ -84,7 +84,8 @@ class StoreHunter(object):
             ("Full Plate - 10000 gp", lambda:CanBuy(self.screen,10000,"Full Plate")),
             ("Elf Bow - 1000 gp", lambda:CanBuy(self.screen,1000,"Elf Bow")),
             ("Long Bow - 10000 gp", lambda:CanBuy(self.screen,10000,"Elf Bow")),
-            ("Steel Daggers - 1000 gp", lambda:CanBuy(self.screen,1000,"Steel Daggers")),          
+            ("Steel Daggers - 1000 gp", lambda:CanBuy(self.screen,1000,"Steel Daggers")),
+            ("Magic Daggers - 10000 gp", lambda:CanBuy(self.screen,10000,"Magic Daggers")),           
         ]
         main_menu = Menu(main_menu_items, self.screen,0)
         main_menu.display()
@@ -488,6 +489,11 @@ class item:
             self.type="Weapon"
         if name=="Steel Daggers":
             self.damage="1d6"
+            self.attacks=2
+            self.penetration=1
+            self.type="Weapon"
+        if name=="Magic Daggers":
+            self.damage="1d10"
             self.attacks=2
             self.penetration=1
             self.type="Weapon"
