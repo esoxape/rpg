@@ -256,7 +256,7 @@ class monster:
             self.absorb=2
             self.weapon="slashes"
             self.gfx="\U0001F9DD"
-            self.speed=14
+            self.speed=20
             self.fireSpeed=80
             self.tick=0
             self.tickWeapon=0            
@@ -1176,7 +1176,8 @@ lower=""
 while(p1=="zxzxae"):      
     print("Welcome to this awesome RPG, please make sure to maximise your window to not cause crashes 1440p or higher resolution is required")
     print("Use arrow keys to navigate, space to shoot and enter to buy and equip stuff. Melee combat is automatic so just relax while in melee")
-    print("Walk onto $$ squares to enter the shop")
+    print("Walk onto $$ squares to enter the shop, Run into monsters to engage in melee")
+    print("Hp regenenrates over time on the overworld map and scales with level, kill a few monsters and things will get easier")
     print("Please select your class:")
     print("1 for Knight(strong melee, weak ranged):")
     print("2 for Hunter (Balanced melee and ranged)")      
