@@ -58,7 +58,7 @@ class Menu(object):
 
             elif key == curses.KEY_DOWN:
                 self.navigate(1)
-
+#Store for Knight
 class StoreKnight(object):
     def __init__(self, stdscreen):
         self.screen = stdscreen
@@ -73,7 +73,7 @@ class StoreKnight(object):
         ]
         main_menu = Menu(main_menu_items, self.screen, 0)
         main_menu.display()
-
+#Store for Hunter
 class StoreHunter(object):
     def __init__(self, stdscreen):
         self.screen = stdscreen
@@ -89,7 +89,7 @@ class StoreHunter(object):
         ]
         main_menu = Menu(main_menu_items, self.screen,0)
         main_menu.display()
-
+#Store for Mage
 class StoreMage(object):
     def __init__(self, stdscreen):
         self.screen = stdscreen
@@ -104,7 +104,8 @@ class StoreMage(object):
             ("Meteor Spell - 10000 gp", lambda:CanBuy(self.screen,10000,"Meteor Spell")),          
         ]
         main_menu = Menu(main_menu_items, self.screen,0)
-        main_menu.display()    
+        main_menu.display()
+#Inventory, messy messy code    
 class Inventory(object):
     def __init__(self, stdscreen):
         submenu1=[]
@@ -277,7 +278,7 @@ class monster:
             if dirx<0:Bullets.append(projectile(self.x,self.y,self.rangedWeapon,"N",0,self.name))
             if diry>0:Bullets.append(projectile(self.x,self.y,self.rangedWeapon,"E",0,self.name))
             if diry<0:Bullets.append(projectile(self.x,self.y,self.rangedWeapon,"W",0,self.name))
-
+    #Creates graphics for the monster from data read from file and places it in the middle of the screen
     def CreateGFX(self):
         result=[["" for x in range(1)] for y in range(42)]
         if self.name=="Bat":
@@ -345,8 +346,7 @@ class monster:
             if self.x==playerposx and self.y==playerposy:return True
             if map[self.x][self.y]=="  " or map[self.x][self.y]==". ":self.previousGFX=map[self.x][self.y]
             map[self.x][self.y]=self.gfx            
-            return False     
-noGo=["\U0001F525","\U00002191 ","\U00002192 ","\U00002193 ","\U00002190 ","\U00002744 ","* ","O ", " O","\U0001F4A5","OO"]
+            return False   
 class item:
     def __init__(self, name):
         self.name=name
@@ -575,7 +575,8 @@ class player:
             self.inventory.append(item("Broken Quarterstaff"))
             self.inventory.append(item("Iceball Spell"))
             self.inventory.append(item("Novice Robe"))   
-
+#Gfx where projectiles should not be deleted  
+noGo=["\U0001F525","\U00002191 ","\U00002192 ","\U00002193 ","\U00002190 ","\U00002744 ","* ","O ", " O","\U0001F4A5","OO"]
 class projectile:        
     def __init__(self, x,y,type, direction, fireCheck,name,tickTotal=0, storeMapGfx="  "):
         self.x=x
