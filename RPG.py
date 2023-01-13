@@ -4,18 +4,83 @@ import random
 import math
 from curses import panel
 yourTarget=-1
-submenuWeapons=[]
-submenuRangedWeapon=[]
-submenuArmor=[]
-main_menu=[]
-class Menu(object):
+def inv(stdscr):
+    curses.curs_set(0)           
+    menu_items = [("Weapon: "+p1.weapon.name,-1), ("Ranged Weapon: "+p1.rangedWeapon.name,-2), ("Armor: "+p1.armor.name,-3), ("Exit",-4)]
+    current_item = 0
+
+    while True:
+        stdscr.clear()
+
+        for index, item in enumerate(menu_items):
+            if index == current_item:
+                stdscr.addstr(index, 0, item[0], curses.A_REVERSE)
+            else:
+                stdscr.addstr(index, 0, item[0])
+        stdscr.refresh()
+        key = stdscr.getch()
+        if key == curses.KEY_UP:
+            current_item = max(0, current_item - 1)
+        elif key == curses.KEY_DOWN:
+            current_item = min(len(menu_items) - 1, current_item + 1)
+        elif key == ord("\n") and menu_items[current_item][1]==-1:
+            menu_items=Reshuffle(menu_items,"Weapon")            
+            stdscr.refresh()
+            stdscr.getch()
+            current_item = 0
+        elif key == ord("\n") and menu_items[current_item][1]==-2:
+            menu_items=Reshuffle(menu_items,"Ranged Weapon")
+            stdscr.refresh()
+            stdscr.getch()
+            current_item = 0
+        elif key == ord("\n") and menu_items[current_item][1]==-3:
+            menu_items=Reshuffle(menu_items,"Armor")
+            stdscr.refresh()
+            stdscr.getch()
+            current_item = 0
+        elif key == ord("\n") and menu_items[current_item][1]>-1:            
+            Equip(menu_items[current_item][1])
+            menu_items=Reshuffle(menu_items,"Reset")
+            stdscr.refresh()
+            stdscr.getch()
+            current_item = 0
+        elif key == ord("\n") and current_item==len(menu_items)-1:break
+
+def Reshuffle(menu, typ):    
+    menu2=[]
+    for i in range(len(p1.inventory)):        
+        if p1.inventory[i].type=="Weapon" and typ=="Weapon":
+            menu2.append((p1.inventory[i].name,i))
+        if p1.inventory[i].type=="Ranged Weapon" and typ=="Ranged Weapon":
+            menu2.append((p1.inventory[i].name,i))
+        if p1.inventory[i].type=="Armor" and typ=="Armor":
+            menu2.append((p1.inventory[i].name,i))
+        if typ=="Reset":menu2 = [("Weapon: "+p1.weapon.name,-1), ("Ranged Weapon: "+p1.rangedWeapon.name,-2), ("Armor: "+p1.armor.name,-3), ("Exit",-4)]    
+    if len(menu2)==0:return menu
+    else: return menu2
+def Equip(which):
+    if p1.inventory[which].type=="Weapon":
+        p1.inventory.append(item(p1.weapon.name))
+        p1.weapon=item(p1.inventory[which].name)
+        del p1.inventory[which]
+    elif p1.inventory[which].type=="Ranged Weapon":
+        p1.inventory.append(item(p1.rangedWeapon.name))
+        p1.rangedWeapon=item(p1.inventory[which].name)
+        del p1.inventory[which]
+    elif p1.inventory[which].type=="Armor":
+        p1.inventory.append(item(p1.armor.name))
+        p1.armor=item(p1.inventory[which].name)
+        del p1.inventory[which]
+    
+
+
+class Menu():
     def __init__(self, items, stdscreen,check):
         self.window = stdscreen.subwin(0, 0)
         self.window.keypad(1)
         self.panel = panel.new_panel(self.window)
         self.panel.hide()
         panel.update_panels()
-
         self.position = 0
         self.items = items
         self.check=check
@@ -59,7 +124,7 @@ class Menu(object):
             elif key == curses.KEY_DOWN:
                 self.navigate(1)
 #Store for Knight
-class StoreKnight(object):
+class StoreKnight():
     def __init__(self, stdscreen):
         self.screen = stdscreen
         curses.curs_set(0)
@@ -71,14 +136,14 @@ class StoreKnight(object):
             ("Magic Two Handed Sword - 10000 gp", lambda:CanBuy(self.screen,10000,"Magic Two Handed Sword")),
             ("Steel Throwing Dagger - 1000 gp", lambda:CanBuy(self.screen,1000,"Steel Throwing Dagger")),          
         ]
+        print(main_menu_items)
         main_menu = Menu(main_menu_items, self.screen, 0)
         main_menu.display()
 #Store for Hunter
-class StoreHunter(object):
+class StoreHunter():
     def __init__(self, stdscreen):
         self.screen = stdscreen
         curses.curs_set(0)
-
         main_menu_items = [
             ("Chain Mail (5 damage absorbtion)- 1000 gp", lambda:CanBuy(self.screen,1000,"Chain Mail")),
             ("Full Plate (8 damage absorbtion)- 10000 gp", lambda:CanBuy(self.screen,10000,"Full Plate")),
@@ -90,89 +155,21 @@ class StoreHunter(object):
         main_menu = Menu(main_menu_items, self.screen,0)
         main_menu.display()
 #Store for Mage
-class StoreMage(object):
-    def __init__(self, stdscreen):
+class StoreMage():
+    def __init__(self, stdscreen):        
         self.screen = stdscreen
-        curses.curs_set(0)
-
+        curses.curs_set(0)                
         main_menu_items = [
             ("Apprentice Robe (3 damage absorbtion) - 1000 gp", lambda:CanBuy(self.screen,1000,"Apprentice Robe")),
             ("Master Robe (5 damage absorbtion)- 10000 gp", lambda:CanBuy(self.screen,10000,"Master Robe")),
-            ("Ice Twister Spell - 1000 gp", lambda:CanBuy(self.screen,1000,"Ice Twister Spell")),
             ("Yew Quarterstaff - 10000 gp", lambda:CanBuy(self.screen,10000,"Yew Quarterstaff")),
             ("Quarterstaff - 1000 gp", lambda:CanBuy(self.screen,1000,"Quarterstaff")),
-            ("Meteor Spell - 10000 gp", lambda:CanBuy(self.screen,10000,"Meteor Spell")),          
+            ("Meteor Spell - 10000 gp", lambda:CanBuy(self.screen,10000,"Meteor Spell")),  
+            ("Twisted Ice Storm Spell - 10000 gp", lambda:CanBuy(self.screen,10000,"Twisted Ice Storm Spell")),         
         ]
         main_menu = Menu(main_menu_items, self.screen,0)
         main_menu.display()
-#Inventory, messy messy code    
-class Inventory(object):
-    def __init__(self, stdscreen):
-        submenu1=[]
-        submenu2=[]
-        submenu3=[]
-        global submenuWeapons
-        global submenuRangedWeapon
-        global submenuArmor
-        global main_menu
-        submenuWeapons=[]
-        submenuRangedWeapon=[]
-        submenuArmor=[]
-        main_menu=[]
-        self.screen = stdscreen
-        curses.curs_set(0)
-        for i in range(len(p1.inventory)):
-            if p1.inventory[i].type=="Weapon":
-                submenu1.append((p1.inventory[i].name, lambda x=i:Inventory.Equip(self,x)))
-        for i in range(len(p1.inventory)):
-            if p1.inventory[i].type=="Ranged Weapon":
-                submenu2.append((p1.inventory[i].name, lambda x=i:Inventory.Equip(self,x)))  
-        for i in range(len(p1.inventory)):
-            if p1.inventory[i].type=="Armor":
-                submenu3.append((p1.inventory[i].name, lambda x=i:Inventory.Equip(self,x)))
-        submenuWeapons=Menu(submenu1, self.screen, 0)
-        submenuRangedWeapon=Menu(submenu2, self.screen, 0)
-        submenuArmor=Menu(submenu3, self.screen, 0)
-        main_menu_items = [
-            ("Weapon - "+p1.weapon.name, submenuWeapons.display),
-            ("Ranged Weapon - "+p1.rangedWeapon.name, submenuRangedWeapon.display),
-            ("Armor - "+p1.armor.name, submenuArmor.display),
-        ]
-        main_menu = Menu(main_menu_items, self.screen,1)
-        main_menu.display() 
-    def Equip(self,index):
-        submenu1=[]
-        submenu2=[]
-        submenu3=[]       
-        if p1.inventory[index].type=="Weapon":        
-            p1.weapon=item(p1.inventory[index].name)        
-        if p1.inventory[index].type=="Ranged Weapon":        
-            p1.rangedWeapon=item(p1.inventory[index].name)              
-        if p1.inventory[index].type=="Armor":        
-            p1.armor=item(p1.inventory[index].name)      
-        self.screen.addstr(0, 0, "Equipped "+p1.inventory[index].name)
-        self.screen.refresh()
-        for i in range(len(p1.inventory)):
-            if p1.inventory[i].type=="Weapon":
-                submenu1.append((p1.inventory[i].name, lambda x=i:Inventory.Equip(self,x)))
-        for i in range(len(p1.inventory)):
-            if p1.inventory[i].type=="Ranged Weapon":
-                submenu2.append((p1.inventory[i].name, lambda x=i:Inventory.Equip(self,x)))  
-        for i in range(len(p1.inventory)):
-            if p1.inventory[i].type=="Armor":
-                submenu3.append((p1.inventory[i].name, lambda x=i:Inventory.Equip(self,x)))
-        submenuWeapons.items=submenu1
-        submenuRangedWeapon.items=submenu2
-        submenuArmor.items=submenu3
-        submenuWeapons.items.append(("exit", "exit"))
-        submenuRangedWeapon.items.append(("exit", "exit"))
-        submenuArmor.items.append(("exit", "exit"))
-        main_menu.items=[
-            ("Weapon - "+p1.weapon.name, submenuWeapons.display),
-            ("Ranged Weapon - "+p1.rangedWeapon.name, submenuRangedWeapon.display),
-            ("Armor - "+p1.armor.name, submenuArmor.display),
-            ("exit", "exit"),
-        ]
+
 def CanBuy(screen,price,index):
     if price<p1.gold:
         p1.inventory.append(item(index))
@@ -257,7 +254,7 @@ class monster:
             self.absorb=2
             self.weapon="slashes"
             self.gfx="\U0001F9DD"
-            self.speed=20
+            self.speed=21
             self.fireSpeed=80
             self.tick=0
             self.tickWeapon=0            
@@ -271,6 +268,7 @@ class monster:
         dirx=diry=0
         self.tickWeapon+=1
         if self.tickWeapon==self.fireSpeed:
+            self.tick=self.tick-self.rangedWeapon.speed
             self.tickWeapon=0
             if abs(playerposx-self.x)>abs(playerposy-self.y):dirx=playerposx-self.x                
             else:diry=playerposy-self.y
@@ -430,15 +428,15 @@ class item:
             self.damage="1d8"
             self.pattern="WW"
             self.type="Ranged Weapon"
-        if name=="Iceball Spell":
-            self.gfxN="\U00002744 "     
-            self.gfxE="\U00002744 "    
-            self.gfxS="\U00002744 "   
+        if name=="Twisted Ice Storm Spell":
+            self.gfxN="\U00002744 "    
+            self.gfxE="\U00002744 "   
+            self.gfxS="\U00002744 " 
             self.gfxW="\U00002744 "   
-            self.speed=8
-            self.range=30
+            self.speed=10
+            self.range=50
             self.damage="1d12"
-            self.pattern="|"
+            self.pattern="*|**|**|*"
             self.type="Ranged Weapon"
         if name=="Meteor Spell":
             self.gfxN="OO"     
@@ -457,7 +455,7 @@ class item:
             self.gfxW="\U00002744 "   
             self.speed=10
             self.range=30
-            self.damage="1d12"
+            self.damage="1d10"
             self.pattern="*|*"
             self.type="Ranged Weapon"
         if name=="Ice Twister SpellGFX":
@@ -541,7 +539,7 @@ class player:
     def __init__(self,name,klass):
         self.name=name
         self.klass=klass
-        self.gold=0
+        self.gold=1111110
         self.inventory=[]
         self.level=1
         self.xp=0
@@ -553,30 +551,21 @@ class player:
             self.maxHP=60
             self.weapon=item("Rusty Two Handed Sword")
             self.rangedWeapon=item("Rusty Throwing Dagger")
-            self.armor=item("Leather Armor")
-            self.inventory.append(item("Rusty Two Handed Sword"))
-            self.inventory.append(item("Rusty Throwing Dagger"))
-            self.inventory.append(item("Leather Armor"))            
+            self.armor=item("Leather Armor")          
         if klass=="Hunter":
             self.hp=50
             self.maxHP=50
             self.weapon=item("Rusty Daggers")
             self.rangedWeapon=item("Short Bow")
-            self.armor=item("Leather Armor")
-            self.inventory.append(item("Rusty Daggers"))
-            self.inventory.append(item("Short Bow"))
-            self.inventory.append(item("Leather Armor"))      
+            self.armor=item("Leather Armor")     
         if klass=="Mage":
             self.hp=40
             self.maxHP=40
             self.weapon=item("Broken Quarterstaff")
-            self.rangedWeapon=item("Iceball Spell")
-            self.armor=item("Novice Robe")
-            self.inventory.append(item("Broken Quarterstaff"))
-            self.inventory.append(item("Iceball Spell"))
-            self.inventory.append(item("Novice Robe"))   
+            self.rangedWeapon=item("Ice Twister Spell")
+            self.armor=item("Novice Robe")  
 #Gfx where projectiles should not be deleted  
-noGo=["\U0001F525","\U00002191 ","\U00002192 ","\U00002193 ","\U00002190 ","\U00002744 ","* ","O ", " O","\U0001F4A5","OO"]
+noGo=["\U0001F525","\U00002191 ","\U00002192 ","\U00002193 ","\U00002190 ","\U00002744 ","* ","O ", " O","\U0001F4A5","OO", "\U0001F32A"]
 class projectile:        
     def __init__(self, x,y,type, direction, fireCheck,name,tickTotal=0, storeMapGfx="  "):
         self.x=x
@@ -589,6 +578,7 @@ class projectile:
         self.storeMapGfx=storeMapGfx
         self.name=name
         self.didMove=False
+        self.originalDirection=direction
     def Move(self):
         self.tick += 1  
         if self.tickTotal==0 and self.tick==1 and self.type.pattern =="WW" and self.fireCheck==0 or self.tickTotal==5 and self.tick==1 and self.type.pattern =="WW" and self.fireCheck==0:
@@ -639,7 +629,7 @@ class projectile:
                 Bullets.append(projectile(self.x,self.y,self.type,"WNW",1,self.name))
                 Bullets.append(projectile(self.x,self.y,self.type,"WSW",1,self.name))
 
-        if self.tickTotal==0 and self.tick==1 and self.type.pattern =="|||" and self.fireCheck==0:
+        if self.tickTotal==0 and self.tick==1 and self.type.pattern =="|||" and self.fireCheck==0 or self.tickTotal==0 and self.tick==1 and self.type.pattern =="*|**|**|*" and self.fireCheck==0:
             if self.direction=="N":
                 if map[self.x][self.y+1]=="  " or map[self.x][self.y+1]==". ":Bullets.append(projectile(self.x,self.y+1,self.type,"N",1,self.name))
                 if map[self.x][self.y-1]=="  " or map[self.x][self.y-1]==". ":Bullets.append(projectile(self.x,self.y-1,self.type,"N",1,self.name))
@@ -671,16 +661,34 @@ class projectile:
                 if map[self.x-1][self.y]=="  " or map[self.x-1][self.y]==". ":Bullets.append(projectile(self.x-1,self.y,self.type,"W",self.fireCheck+1,self.name,self.tickTotal))
                 self.fireCheck=5
 
-        if self.direction == "N" or self.direction=="NW" or self.direction=="NE":    
+        if self.type.pattern=="*|**|**|*" and self.direction!="None" and self.type.speed == self.tick:
+            rngdir=random.randint(1, 3)            
+            if self.originalDirection=="N":                
+                if rngdir==1:self.direction="NW"
+                if rngdir==2:self.direction="N"
+                if rngdir==3:self.direction="NE"
+            elif self.originalDirection=="E":
+                if rngdir==1:self.direction="NE"
+                if rngdir==2:self.direction="E"
+                if rngdir==3:self.direction="SE" 
+            elif self.originalDirection=="S":
+                if rngdir==1:self.direction="SE"
+                if rngdir==2:self.direction="S"
+                if rngdir==3:self.direction="SW"  
+            elif self.originalDirection=="W":
+                if rngdir==1:self.direction="SW"
+                if rngdir==2:self.direction="W"
+                if rngdir==3:self.direction="NW"      
+            
+        if self.direction!="None":
             if self.type.speed == self.tick: 
                 self.tickTotal+=1 
                 self.didMove=True               
                 if self.tickTotal>1 and self.type.pattern!="V":map[self.x][self.y]=self.storeMapGfx
                 elif self.type.pattern=="V": Bullets.append(projectile(self.x,self.y,self.type,"None",1,self.name,0,self.storeMapGfx))               
                 self.tick = 0
-                if self.x-1==playerposx and self.y==playerposy and self.direction=="N" or self.x-1==playerposx and self.y-1==playerposy and self.direction=="NW" or self.x-1==playerposx and self.y+1==playerposy and self.direction=="NE":
-                    projectile.PlayerDamage(self) 
-                elif self.direction=="N":
+
+                if self.direction=="N":
                     self.x = self.x - 1
                     if map[self.x][self.y]=="  " or map[self.x][self.y]==". ":
                         self.storeMapGfx=map[self.x][self.y]
@@ -697,23 +705,6 @@ class projectile:
                     if map[self.x][self.y]=="  " or map[self.x][self.y]==". ":
                         self.storeMapGfx=map[self.x][self.y]
                         map[self.x][self.y] = self.type.gfxN
-                                     
-                for i in range(len(monster.monsters)):
-                    if self.x==monster.monsters[i].x and self.y==monster.monsters[i].y:
-                        projectile.MonsterDamage(self,i)
-                        break
-                if map[self.x][self.y] not in noGo:
-                    self.tickTotal=self.type.range+1   
-                
-        if self.direction == "E" or self.direction == "ENE" or self.direction == "ESE":
-            if self.type.speed == self.tick:
-                self.tickTotal+=1 
-                self.didMove=True  
-                if self.tickTotal>1 and self.type.pattern!="V":map[self.x][self.y]=self.storeMapGfx
-                elif self.type.pattern=="V": Bullets.append(projectile(self.x,self.y,self.type,"None",1,self.name,0,self.storeMapGfx)) 
-                self.tick = 0
-                if self.x==playerposx and self.y+1==playerposy and self.direction=="E" or self.x-1==playerposx and self.y+1==playerposy and self.direction=="ENE" or self.x+1==playerposx and self.y+1==playerposy and self.direction=="ESE":
-                    projectile.PlayerDamage(self) 
                 elif self.direction == "E":
                     self.y = self.y + 1
                     if map[self.x][self.y]=="  " or map[self.x][self.y]==". ":
@@ -731,23 +722,6 @@ class projectile:
                     if map[self.x][self.y]=="  " or map[self.x][self.y]==". ":
                         self.storeMapGfx=map[self.x][self.y]
                         map[self.x][self.y] = self.type.gfxE
-
-                for i in range(len(monster.monsters)):
-                    if self.x==monster.monsters[i].x and self.y==monster.monsters[i].y:
-                        projectile.MonsterDamage(self,i)
-                        break
-                if map[self.x][self.y] not in noGo:
-                    self.tickTotal=self.type.range+1   
-                    
-        if self.direction == "S" or self.direction == "SE" or self.direction == "SW":     
-            if self.type.speed == self.tick:
-                self.tickTotal+=1
-                self.didMove=True  
-                if self.tickTotal>1 and self.type.pattern!="V":map[self.x][self.y]=self.storeMapGfx
-                elif self.type.pattern=="V": Bullets.append(projectile(self.x,self.y,self.type,"None",1,self.name,0,self.storeMapGfx)) 
-                self.tick = 0
-                if self.x+1==playerposx and self.y==playerposy and self.direction=="S" or self.x+1==playerposx and self.y+1==playerposy and self.direction=="SE" or self.x+1==playerposx and self.y-1==playerposy and self.direction=="SW":
-                    projectile.PlayerDamage(self)  
                 elif self.direction == "S":
                     self.x = self.x + 1
                     if map[self.x][self.y]=="  " or map[self.x][self.y]==". ":
@@ -765,23 +739,6 @@ class projectile:
                     if map[self.x][self.y]=="  " or map[self.x][self.y]==". ":
                         self.storeMapGfx=map[self.x][self.y]
                         map[self.x][self.y] = self.type.gfxS
-
-                for i in range(len(monster.monsters)):
-                    if self.x==monster.monsters[i].x and self.y==monster.monsters[i].y:
-                        projectile.MonsterDamage(self,i)
-                        break
-                if map[self.x][self.y] not in noGo:
-                    self.tickTotal=self.type.range+1   
-                
-        if self.direction == "W" or self.direction == "WNW" or self.direction == "WSW":    
-            if self.type.speed == self.tick:
-                self.tickTotal+=1 
-                self.didMove=True                 
-                if self.tickTotal>1 and self.type.pattern!="V":map[self.x][self.y]=self.storeMapGfx
-                elif self.type.pattern=="V": Bullets.append(projectile(self.x,self.y,self.type,"None",1,self.name,0,self.storeMapGfx))
-                self.tick = 0
-                if self.x==playerposx and self.y-1==playerposy and self.direction=="W" or self.x+1==playerposx and self.y-1==playerposy and self.direction=="WNW" or self.x-1==playerposx and self.y-1==playerposy and self.direction=="WSW":
-                    projectile.PlayerDamage(self) 
                 elif self.direction == "W":
                     self.y =self.y - 1
                     if map[self.x][self.y]=="  " or map[self.x][self.y]==". ":
@@ -799,44 +756,46 @@ class projectile:
                     if map[self.x][self.y]=="  " or map[self.x][self.y]==". ":
                         self.storeMapGfx=map[self.x][self.y]
                         map[self.x][self.y] = self.type.gfxW
+                if self.x==playerposx and self.y==playerposy :
+                    projectile.PlayerDamage(self)  
 
                 for i in range(len(monster.monsters)):
                     if self.x==monster.monsters[i].x and self.y==monster.monsters[i].y:
                         projectile.MonsterDamage(self,i)
                         break
                 if map[self.x][self.y] not in noGo:
-                    self.tickTotal=self.type.range+1   
+                    self.tickTotal=self.type.range+1  
 
-        if self.type.pattern =="*|*" and self.tickTotal>0:
-            if self.tick==1:
+        if self.type.pattern =="*|*" and self.tickTotal>0 or self.type.pattern =="*|**|**|*" and self.tickTotal>0:
+            if self.tick==1 or self.tick==11 or self.tick==21:
                 if map[self.x-1][self.y]==". " or map[self.x-1][self.y]=="  ":                    
                     Bullets.append(projectile(self.x-1,self.y,item("Ice Twister SpellGFX"),"None",1,self.name,0,map[self.x-1][self.y]))
                 else:projectile.SpinDamage(self,self.x-1,self.y)
-            if self.tick==2:
+            if self.tick==2 or self.tick==12 or self.tick==22:
                 if map[self.x+1][self.y]==". " or map[self.x+1][self.y]=="  ":
                     Bullets.append(projectile(self.x+1,self.y,item("Ice Twister SpellGFX"),"None",1,self.name,0,map[self.x+1][self.y])) 
                 else:projectile.SpinDamage(self,self.x+1,self.y)
-            if self.tick==3:
+            if self.tick==3 or self.tick==13 or self.tick==23:
                 if map[self.x-1][self.y+1]==". " or map[self.x-1][self.y+1]=="  ":
                     Bullets.append(projectile(self.x-1,self.y+1,item("Ice Twister SpellGFX"),"None",1,self.name,0,map[self.x-1][self.y+1]))
                 else:projectile.SpinDamage(self,self.x-1,self.y+1)
-            if self.tick==4:
+            if self.tick==4 or self.tick==14 or self.tick==24:
                 if map[self.x+1][self.y-1]==". " or map[self.x+1][self.y-1]=="  ":
                     Bullets.append(projectile(self.x+1,self.y-1,item("Ice Twister SpellGFX"),"None",1,self.name,0,map[self.x+1][self.y-1])) 
                 else:projectile.SpinDamage(self,self.x+1,self.y-1) 
-            if self.tick==5:
+            if self.tick==5 or self.tick==15 or self.tick==25:
                 if map[self.x][self.y+1]==". " or map[self.x][self.y+1]=="  ":
                     Bullets.append(projectile(self.x,self.y+1,item("Ice Twister SpellGFX"),"None",1,self.name,0,map[self.x][self.y+1])) 
                 else:projectile.SpinDamage(self,self.x,self.y+1) 
-            if self.tick==6:                   
+            if self.tick==6 or self.tick==16 or self.tick==26:                   
                 if map[self.x][self.y-1]==". " or map[self.x][self.y-1]=="  ":
                     Bullets.append(projectile(self.x,self.y-1,item("Ice Twister SpellGFX"),"None",1,self.name,0,map[self.x][self.y-1])) 
                 else:projectile.SpinDamage(self,self.x,self.y-1)
-            if self.tick==7:
+            if self.tick==7 or self.tick==17 or self.tick==27:
                 if map[self.x+1][self.y+1]==". " or map[self.x+1][self.y+1]=="  ":
                     Bullets.append(projectile(self.x+1,self.y+1,item("Ice Twister SpellGFX"),"None",1,self.name,0,map[self.x+1][self.y+1])) 
                 else:projectile.SpinDamage(self,self.x+1,self.y+1)
-            if self.tick==8:
+            if self.tick==8 or self.tick==18 or self.tick==28:
                 if map[self.x-1][self.y-1]==". " or map[self.x-1][self.y-1]=="  ":
                     Bullets.append(projectile(self.x-1,self.y-1,item("Ice Twister SpellGFX"),"None",1,self.name,0,map[self.x-1][self.y-1])) 
                 else:projectile.SpinDamage(self,self.x-1,self.y-1)
@@ -1077,6 +1036,7 @@ def PlayerMeeleCombat(a,b):
                 break
 ##Check if coordinate is store
 def IsStore(a,b):
+    global stdscr
     if grid[20+a][59+b]=="$$":
         if p1.klass=="Knight":curses.wrapper(StoreKnight)
         if p1.klass=="Hunter":curses.wrapper(StoreHunter)
@@ -1284,12 +1244,15 @@ while True:
             MeleeCombat(i)
             break 
     if key ==ord('i'):
+        inv(stdscr)
+        '''
         curses.wrapper(Inventory)
         stdscr = curses.initscr()
         curses.noecho()
         curses.cbreak()
         stdscr.keypad(True)
         stdscr.nodelay(True) 
+        '''
     if CanFire==True and key ==ord(' '):
         CanFire=False        
         if Direction=="N":Bullets.append(projectile(x+20,y+59,p1.rangedWeapon,Direction,0,p1.name))   
