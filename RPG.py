@@ -539,7 +539,7 @@ class player:
     def __init__(self,name,klass):
         self.name=name
         self.klass=klass
-        self.gold=1111110
+        self.gold=0
         self.inventory=[]
         self.level=1
         self.xp=0
